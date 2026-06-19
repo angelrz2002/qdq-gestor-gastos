@@ -104,7 +104,8 @@
       </div>
 
       <div v-else class="table-responsive">
-        <table class="expenses-table">
+        <!-- Vista de tabla para pantallas grandes -->
+        <table class="expenses-table desktop-only">
           <thead>
             <tr>
               <th>Fecha</th>
@@ -157,6 +158,48 @@
             </tr>
           </tbody>
         </table>
+
+        <!-- Vista de tarjetas para móviles -->
+        <div class="mobile-card-list mobile-only">
+          <div 
+            v-for="gasto in gastosPaginados" 
+            :key="gasto.id" 
+            class="expense-mobile-card"
+          >
+            <div class="mobile-card-header">
+              <span class="mobile-card-date">{{ formatearFecha(gasto.fecha) }}</span>
+              <span 
+                class="badge-category"
+                :style="{ 
+                  '--bg-badge': obtenerColorCategoria(gasto.categoria) + '33',
+                  '--color-badge': obtenerColorCategoria(gasto.categoria)
+                }"
+              >
+                {{ gasto.categoria }}
+              </span>
+            </div>
+            <div class="mobile-card-body">
+              <p class="mobile-card-description">{{ gasto.descripcion }}</p>
+              <h4 class="mobile-card-amount">{{ formatearMoneda(gasto.importe) }}</h4>
+            </div>
+            <div class="mobile-card-actions">
+              <button 
+                @click="$emit('edit', gasto)" 
+                class="btn-action-mobile edit" 
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="action-icon"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                <span>Editar</span>
+              </button>
+              <button 
+                @click="$emit('delete', gasto.id)" 
+                class="btn-action-mobile delete" 
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="action-icon"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                <span>Eliminar</span>
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- Paginador -->
@@ -727,4 +770,104 @@ const obtenerColorCategoria = (nombre) => {
   outline: none; cursor: pointer; transition: var(--transition);
 }
 .size-select:focus { border-color: var(--border-color-focus); }
+
+/* Responsive View Utilities */
+.mobile-only {
+  display: none !important;
+}
+
+@media (max-width: 768px) {
+  .desktop-only {
+    display: none !important;
+  }
+  .mobile-only {
+    display: block !important;
+  }
+  .mobile-card-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem;
+  }
+  .expense-mobile-card {
+    background-color: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    transition: var(--transition);
+  }
+  .expense-mobile-card:hover {
+    border-color: var(--text-secondary);
+    background-color: rgba(26, 43, 60, 0.15);
+  }
+  .mobile-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .mobile-card-date {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    font-variant-numeric: tabular-nums;
+  }
+  .mobile-card-body {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  .mobile-card-description {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    word-break: break-word;
+    text-align: left;
+  }
+  .mobile-card-amount {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    white-space: nowrap;
+  }
+  .mobile-card-actions {
+    display: flex;
+    gap: 0.5rem;
+    border-top: 1px solid var(--border-color);
+    padding-top: 0.75rem;
+    margin-top: 0.25rem;
+  }
+  .btn-action-mobile {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    font-family: var(--font-sans);
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 0.5rem;
+    border-radius: var(--radius-sm);
+    background-color: var(--bg-input);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: var(--transition);
+  }
+  .btn-action-mobile:hover {
+    background-color: var(--bg-input-focus);
+    color: var(--text-primary);
+  }
+  .btn-action-mobile.edit:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+  }
+  .btn-action-mobile.delete:hover {
+    color: var(--danger);
+    border-color: var(--danger);
+    background-color: var(--danger-light);
+  }
+}
 </style>
